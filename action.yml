@@ -7,9 +7,6 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-
     - id: generate-version
       name: "Generate version number"
       shell: bash
