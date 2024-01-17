@@ -13,8 +13,7 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
-          go-version-file: "go.mod" # This uses the Go version defined in the mod file, in contrast to setting a defined version of go, here.
-          cache: false # todo consider activating this.
+          go-version-file: "go.mod" # This uses the Go version defined in the mod file, in contrast to setting a defined version.
 
       - name: Sync Go dependencies
         run: |
