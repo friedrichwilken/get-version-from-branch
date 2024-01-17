@@ -18,7 +18,6 @@ jobs:
 
       - name: Sync Go dependencies
         run: |
-          go mod tidy # todo consider removing; there should be not requirement to tidy the dependencies at this place
           go mod vendor
 
       - name: Run tests
