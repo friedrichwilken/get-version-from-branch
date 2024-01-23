@@ -4,6 +4,11 @@ name: Lint code (reusable)
 
 on:
   workflow_call:
+    inputs:
+      actor:
+        required: true
+        type: string
+        description: the user that will be associated with any PRs that are getting created here.
 
 jobs:
   unit:
@@ -16,6 +21,11 @@ jobs:
         shell: bash
         # Whereever you use this workflow, the script render-sec-scanners-config.sh must exist.
         run: ./hack/scripts/render-sec-scanners-config.sh
+
+      - name: Set Git Config
+        run: |
+          git config user.name "${{ inputs.actor }}"
+          git config user.email "${{ inputs.actor }}@users.noreply.github.com"
 
       - name: Create a pull request
         shell: bash
