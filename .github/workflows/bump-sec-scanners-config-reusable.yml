@@ -41,7 +41,8 @@ jobs:
             PR_DATE="$(date '+%Y-%m-%d-%H-%M-%S')"
             git add .
             git commit -m "auto-bump sec-scanners-config: ${PR_DATE}"
-            
+
+            git remote set-url origin "https://${{ secrets.GITHUB_USERNAME }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}"
             git push origin "$BRANCH_NAME"
             BODY="This is an auto-generated PR to bump the sec-scanners-config.yml on ${CURRENT_BRANCH}."
             gh pr create --base "${CURRENT_BRANCH}" --head "${BRANCH_NAME}" --title "Bump sec-scanners-config on ${CURRENT_BRANCH}" --body "${BODY}" 
