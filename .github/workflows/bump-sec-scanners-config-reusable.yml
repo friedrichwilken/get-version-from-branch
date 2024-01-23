@@ -5,7 +5,8 @@ name: Lint code (reusable)
 on:
   workflow_call:
     secrets:
-      BOT_PAT: ${{ secrets.BOT_PAT }}
+      BOT_PAT:
+        required: true
     inputs:
       author:
         required: true
