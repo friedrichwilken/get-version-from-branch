@@ -1,0 +1,38 @@
+# todo description
+# requires render-sec-scanners-config.sh
+name: Lint code (reusable)
+
+on:
+  workflow_call:
+
+jobs:
+  unit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Render sec-scanners-config.sh
+        shell: bash
+        # Whereever you use this workflow, the script render-sec-scanners-config.sh must exist.
+        run: ./hack/scripts/render-sec-scanners-config.sh
+
+      - name: Create a pull request
+        shell: bash
+        run: |
+          # If there are changes, we will create a PR.
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "Uncommitted changes found. Committing changes..."
+
+            PR_DATE="$(date '+%Y-%m-%d-%H-%M-%S')"
+            git add .
+            git commit -m "auto-bump sec-scanners-config: ${PR_DATE}"
+            
+            CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+            BRANCH_NAME="sec-scanners-bump-${CURRENT_BRANCH}-${PR_DATE}"
+            git push origin BRANCH_NAME
+            BODY="This is an auto-generated PR to bump the sec-scanners-config.yml on ${CURRENT_BRANCH}."
+            gh pr create --base master --head "${BRANCH_NAME}" --title "Bump sec-scanners-config on ${CURRENT_BRANCH}" --body "${BODY}" 
+          else
+            echo "No uncommitted changes found."
+          fi
