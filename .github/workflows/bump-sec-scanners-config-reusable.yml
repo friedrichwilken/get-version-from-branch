@@ -4,8 +4,10 @@ name: Lint code (reusable)
 
 on:
   workflow_call:
+    secrest:
+      BOT_PAT: ${{ secrets.BOT_PAT }}
     inputs:
-      actor:
+      author:
         required: true
         type: string
         description: the user that will be associated with any PRs that are getting created here.
@@ -24,10 +26,12 @@ jobs:
 
       - name: Set Git Config
         run: |
-          git config user.name "${{ inputs.actor }}"
-          git config user.email "${{ inputs.actor }}@users.noreply.github.com"
+          git config user.name "${{ inputs.author }}"
+          git config user.email "${{ inputs.author }}@users.noreply.github.com"
 
       - name: Create a pull request
+        env:
+          GITHUB_TOKEN: ${{ secrets.BOT_PAT }}
         shell: bash
         run: |
           # If there are changes, we will create a PR.
@@ -42,7 +46,6 @@ jobs:
             git add .
             git commit -m "auto-bump sec-scanners-config: ${PR_DATE}"
 
-            git remote set-url origin "https://${{ secrets.GITHUB_USERNAME }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}"
             git push origin "$BRANCH_NAME"
             BODY="This is an auto-generated PR to bump the sec-scanners-config.yml on ${CURRENT_BRANCH}."
             gh pr create --base "${CURRENT_BRANCH}" --head "${BRANCH_NAME}" --title "Bump sec-scanners-config on ${CURRENT_BRANCH}" --body "${BODY}" 
