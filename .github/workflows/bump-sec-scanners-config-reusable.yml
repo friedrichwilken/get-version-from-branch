@@ -4,7 +4,7 @@ name: Lint code (reusable)
 
 on:
   workflow_call:
-    secrest:
+    secrets:
       BOT_PAT: ${{ secrets.BOT_PAT }}
     inputs:
       author:
