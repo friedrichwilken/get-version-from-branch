@@ -40,7 +40,7 @@ jobs:
             
             CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
             BRANCH_NAME="sec-scanners-bump-${CURRENT_BRANCH}-${PR_DATE}"
-            git push origin BRANCH_NAME
+            git push origin "$BRANCH_NAME"
             BODY="This is an auto-generated PR to bump the sec-scanners-config.yml on ${CURRENT_BRANCH}."
             gh pr create --base "${CURRENT_BRANCH}" --head "${BRANCH_NAME}" --title "Bump sec-scanners-config on ${CURRENT_BRANCH}" --body "${BODY}" 
           else
