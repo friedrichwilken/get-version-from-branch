@@ -26,7 +26,6 @@ jobs:
         run: |
           if [ -z $(git status --porcelain) ]; then
             echo "No changes found. No need to create a PR"
-            echo "create_pr=false" >> $GIHUB_ENV
           else
             echo "Changes found. Creating a PR and waiting for it to be merged."
             echo "create_pr=true" >> $GIHUB_ENV
