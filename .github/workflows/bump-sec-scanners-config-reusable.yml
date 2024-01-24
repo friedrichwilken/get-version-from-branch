@@ -114,7 +114,7 @@ jobs:
           end_time=$((SECONDS+${TIMEOUT}))
 
           while [ $SECONDS -lt $end_time ]; do
-            pr_state=$(gh pr view ${PR_URL} --json state --porcelain)
+            pr_state=$(gh pr view ${PR_URL} --json state --jq '.state')
             if [ "$pr_state" == "MERGED" ]; then
               echo "PR has been merged!"
               exit 0
