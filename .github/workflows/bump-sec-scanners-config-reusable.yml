@@ -26,37 +26,38 @@ jobs:
         # Where ever you use this workflow, the script hack/scripts/render-sec-scanners-config.sh must exist.
         run: ./hack/scripts/render-sec-scanners-config.sh
 
-      - name: Set git Config
+      - name: Check for Changes
         run: |
+          if [ -z (git status --porcelain) ]; then
+            echo "No changes found. No need to create a PR"
+            exit 0  # Exit the step (and the job) with success
+          else
+            echo "Changes found. Creating a PR and waiting for it to be merged."
+          fi
 
       - name: Create a pull request
         env:
           REPO: ${{ github.repository }}
         shell: bash
         run: |
-          # If there are changes, we will create a PR.
-          if [ -n "$(git status --porcelain)" ]; then
-            echo "Uncommitted changes found. Committing changes..."
-            
-            git config user.name "friedrichwilken"
-            git config user.email "jens.wilken@sap.com"
-            
-          CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
-            echo "${CURRENT_BRANCH}"
-            PR_DATE="$(date '+%Y-%m-%d-%H-%M-%S')"
-            echo "${PR_DATE}"
-            BRANCH_NAME="sec-scanners-bump-${CURRENT_BRANCH}-${PR_DATE}"
-            echo "${BRANCH_NAME}" 
-            git checkout -b "${BRANCH_NAME}"
-            
-            git add sec-scanners-config.yaml
-            git commit -m "auto-bump sec-scanners-config: ${PR_DATE}"
-                     
-            git remote set-url origin "https://x-access-token:${{ secrets.BOT_PAT }}@github.com/${REPO}.git"
-            git push origin "$BRANCH_NAME"
+          echo "Uncommitted changes found. Committing changes..."
 
-            BODY="This is an auto-generated PR to bump the sec-scanners-config.yml on ${REPO}."
-            gh pr create --base "${CURRENT_BRANCH}" --head "${BRANCH_NAME}" --title "Bump sec-scanners-config on ${CURRENT_BRANCH}" --body "${BODY}" 
-          else
-            echo "No uncommitted changes found."
-          fi
+          git config user.name "friedrichwilken"
+          git config user.email "jens.wilken@sap.com"         
+
+          CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+          echo "${CURRENT_BRANCH}"
+          PR_DATE="$(date '+%Y-%m-%d-%H-%M-%S')"
+          echo "${PR_DATE}"
+          BRANCH_NAME="sec-scanners-bump-${CURRENT_BRANCH}-${PR_DATE}"
+          echo "${BRANCH_NAME}" 
+          git checkout -b "${BRANCH_NAME}"
+
+          git add sec-scanners-config.yaml
+          git commit -m "auto-bump sec-scanners-config: ${PR_DATE}"
+                   
+          git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${REPO}.git"
+          git push origin "$BRANCH_NAME"
+
+          BODY="This is an auto-generated PR to bump the sec-scanners-config.yml on ${REPO}."
+          gh pr create --base "${CURRENT_BRANCH}" --head "${BRANCH_NAME}" --title "Bump sec-scanners-config on ${CURRENT_BRANCH}" --body "${BODY}"
