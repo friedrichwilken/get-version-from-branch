@@ -32,13 +32,13 @@ jobs:
           fi
 
       - name: Render sec-scanners-config.sh
-        if: ${{ env.create_pr }} == 'true'
+        if: ${{ env.create_pr == 'true' }}
         shell: bash
         # Where ever you use this workflow, the script hack/scripts/render-sec-scanners-config.sh must exist.
         run: ./hack/scripts/render-sec-scanners-config.sh
 
       - name: Create a pull request
-        if: ${{ env.create_pr }} == 'true'
+        if: ${{ env.create_pr == 'true' }}
         env:
           REPO: ${{ github.repository }}
           GH_TOKEN: ${{ secrets.BOT_PAT }}
