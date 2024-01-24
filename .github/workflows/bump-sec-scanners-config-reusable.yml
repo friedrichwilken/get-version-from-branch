@@ -85,10 +85,10 @@ jobs:
         shell: bash
         run: |
           # set git username 
-          ghusername=$(curl -H "Authorization: token ${GH_TOKEN}" https://api.github.com/user)
+          ghusername=$(curl -s -H "Authorization: token ${GH_TOKEN}" https://api.github.com/user)
           git config user.name "${ghusername}"
           # set git mail address
-          ghmailaddress=$(curl -H "Authorization: token ${GH_TOKEN}" https://api.github.com/email)
+          ghmailaddress=$(curl -s -H "Authorization: token ${GH_TOKEN}" https://api.github.com/email)
           git config user.email "${ghmailaddress}"
           # set remote url
           git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${REPO}.git"
