@@ -22,20 +22,24 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Check for Changes
+        id: skip_check
         run: |
           if [ -z $(git status --porcelain) ]; then
             echo "No changes found. No need to create a PR"
-            exit 0  # Exit the step (and the job) with success
+            echo "create_pr=false" >> $GIHUB_ENV
           else
             echo "Changes found. Creating a PR and waiting for it to be merged."
+            echo "create_pr=true" >> $GIHUB_ENV
           fi
 
       - name: Render sec-scanners-config.sh
+        if: ${{ env.create_pr }} == 'true'
         shell: bash
         # Where ever you use this workflow, the script hack/scripts/render-sec-scanners-config.sh must exist.
         run: ./hack/scripts/render-sec-scanners-config.sh
 
       - name: Create a pull request
+        if: ${{ env.create_pr }} == 'true'
         env:
           REPO: ${{ github.repository }}
           GH_TOKEN: ${{ secrets.BOT_PAT }}
