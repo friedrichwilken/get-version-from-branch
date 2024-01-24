@@ -21,11 +21,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Render sec-scanners-config.sh
-        shell: bash
-        # Where ever you use this workflow, the script hack/scripts/render-sec-scanners-config.sh must exist.
-        run: ./hack/scripts/render-sec-scanners-config.sh
-
       - name: Check for Changes
         run: |
           if [ -z $(git status --porcelain) ]; then
@@ -34,6 +29,11 @@ jobs:
           else
             echo "Changes found. Creating a PR and waiting for it to be merged."
           fi
+
+      - name: Render sec-scanners-config.sh
+        shell: bash
+        # Where ever you use this workflow, the script hack/scripts/render-sec-scanners-config.sh must exist.
+        run: ./hack/scripts/render-sec-scanners-config.sh
 
       - name: Create a pull request
         env:
