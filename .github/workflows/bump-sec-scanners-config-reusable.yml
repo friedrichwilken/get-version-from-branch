@@ -10,22 +10,23 @@ on:
 
 jobs:
   bump:
-    name: bump sec-scanners-config.yaml
+    name: Bump sec-scanners-config.yaml
     runs-on: ubuntu-latest
     env:
       REPO: ${{ github.repository }}
 
     steps:
-      - name: Checkout code
+      - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Render sec-scanners-config.sh
+      - name: Render sec-scanners-config.yaml
         shell: bash
         # Where ever you use this workflow, the script hack/scripts/render-sec-scanners-config.sh must exist.
         run: ./hack/scripts/render-sec-scanners-config.sh
 
-      - name: Check for Changes
-        id: skip_check
+      # Check if there are changes so we can determin if all following steps can be skipped.
+      - name: Check For Changes
+        shell: bash
         run: |
           if [ -z "$(git status --porcelain)" ]; then 
             echo "No changes found. No need to create a PR" 
@@ -38,27 +39,41 @@ jobs:
         if: ${{ env.create_pr == 'true' }}
         env:
           GH_TOKEN: ${{ secrets.BOT_PAT }}
+        shell: bash
         run: |
           # set git username 
-          ghusername=$(curl -H "Authorization: token {GH_TOKEN}" https://api.github.com/user)
+          ghusername=$(curl -H "Authorization: token ${GH_TOKEN}" https://api.github.com/user)
           git config user.name "${ghusername}"
-          # set git mail adress
-          ghmailaddress=$(curl -H "Authorization: token {GH_TOKEN}" https://api.github.com/email)
+          # set git mail address
+          ghmailaddress=$(curl -H "Authorization: token ${GH_TOKEN}" https://api.github.com/email)
           git config user.email "${ghmailaddress}"
           # set remote url
           git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${REPO}.git"
 
-      - name: Create a pull request
+      - name: Set All Variables
         if: ${{ env.create_pr == 'true' }}
         shell: bash
         run: |
-
           CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
-          echo "${CURRENT_BRANCH}"
+          echo "current branch: ${CURRENT_BRANCH}"
+          echo "CURRENT_BRANCH=${CURRENT_BRANCH}" >> $GITHUB_ENV
+
           PR_DATE="$(date '+%Y-%m-%d-%H-%M-%S')"
-          echo "${PR_DATE}"
+          echo "pr date: ${PR_DATE}"
+          echo "PR_DATE=${PR_DATE}" >> $GITHUB_ENV
+
           BRANCH_NAME="sec-scanners-bump-${CURRENT_BRANCH}-${PR_DATE}"
-          echo "${BRANCH_NAME}" 
+          echo "name of the new branch: ${BRANCH_NAME}"
+          echo "BRANCH_NAME=${BRANCH_NAME}" >> $GITHUB_ENV
+
+      - name: Create a Pull Request
+        if: ${{ env.create_pr == 'true' }}
+        env:
+          CURRENT_BRANCH: ${{ env.CURRENT_BRANCH }}
+          PR_DATE: ${{ env.PR_DATE }}
+          BRANCH_NAME: ${{ env.BRANCH_NAME }}
+        shell: bash
+        run: |
           git checkout -b "${BRANCH_NAME}"
 
           git add sec-scanners-config.yaml
