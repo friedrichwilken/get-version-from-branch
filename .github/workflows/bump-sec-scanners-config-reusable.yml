@@ -28,12 +28,13 @@ jobs:
 
       - name: Set git Config
         run: |
-          git config user.name "${{ inputs.author }}"
-          git config user.email "${{ inputs.author }}@users.noreply.github.com"
+          ghuser=$(curl -H "Authorization: token ${{ secrets.BOT_PAT }}" https://api.github.com/user)
+          git config user.name "${ghuser}"
+          ghmail=$(curl -H "Authorization: token ${{ secrets.BOT_PAT }}" https://api.github.com/emails)
+          git config user.email "${ghmail}"
 
       - name: Create a pull request
         env:
-          GH_TOKEN: ${{ secrets.BOT_PAT }}
           REPO: ${{ github.repository }}
         shell: bash
         run: |
@@ -52,7 +53,7 @@ jobs:
             git add sec-scanners-config.yaml
             git commit -m "auto-bump sec-scanners-config: ${PR_DATE}"
                      
-            git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${REPO}.git"
+            git remote set-url origin "https://x-access-token:${{ secrets.BOT_PAT }}@github.com/${REPO}.git"
             git push origin "$BRANCH_NAME"
 
             BODY="This is an auto-generated PR to bump the sec-scanners-config.yml on ${}."
