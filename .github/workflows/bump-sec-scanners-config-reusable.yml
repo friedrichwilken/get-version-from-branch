@@ -72,6 +72,7 @@ jobs:
           CURRENT_BRANCH: ${{ env.CURRENT_BRANCH }}
           PR_DATE: ${{ env.PR_DATE }}
           BRANCH_NAME: ${{ env.BRANCH_NAME }}
+          GH_TOKEN: ${{ secrets.BOT_PAT }}
         shell: bash
         run: |
           git checkout -b "${BRANCH_NAME}"
