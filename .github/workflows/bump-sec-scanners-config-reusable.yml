@@ -28,7 +28,7 @@ jobs:
 
       - name: Check for Changes
         run: |
-          if [ -z (git status --porcelain) ]; then
+          if [ -z $(git status --porcelain) ]; then
             echo "No changes found. No need to create a PR"
             exit 0  # Exit the step (and the job) with success
           else
