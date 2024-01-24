@@ -24,11 +24,11 @@ jobs:
       - name: Check for Changes
         id: skip_check
         run: |
-          if [ -z $(git status --porcelain) ]; then
-            echo "No changes found. No need to create a PR"
-          else
-            echo "Changes found. Creating a PR and waiting for it to be merged."
-            echo "create_pr=true" >> $GIHUB_ENV
+          if [ -z "$(git status --porcelain)" ]; then 
+            echo "No changes found. No need to create a PR" 
+          else 
+            echo "Changes found. Creating a PR and waiting for it to be merged." 
+            echo "create_pr=true" >> $GITHUB_ENV 
           fi
 
       - name: Set Up Git
