@@ -28,19 +28,21 @@ jobs:
 
       - name: Set git Config
         run: |
-          git config user.name "friedrichwilken"
-          git config user.email "jens.wilken@sap.com"
 
       - name: Create a pull request
         env:
           REPO: ${{ github.repository }}
+          GH_TOKEN: ${{ secrets.BOT_PAT }}
         shell: bash
         run: |
           # If there are changes, we will create a PR.
           if [ -n "$(git status --porcelain)" ]; then
             echo "Uncommitted changes found. Committing changes..."
             
-            CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+            git config user.name "friedrichwilken"
+            git config user.email "jens.wilken@sap.com"
+            
+          CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
             echo "${CURRENT_BRANCH}"
             PR_DATE="$(date '+%Y-%m-%d-%H-%M-%S')"
             echo "${PR_DATE}"
@@ -51,7 +53,7 @@ jobs:
             git add sec-scanners-config.yaml
             git commit -m "auto-bump sec-scanners-config: ${PR_DATE}"
                      
-            git remote set-url origin "https://x-access-token:${{ secrets.BOT_PAT }}@github.com/${REPO}.git"
+            git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${REPO}.git"
             git push origin "$BRANCH_NAME"
 
             BODY="This is an auto-generated PR to bump the sec-scanners-config.yml on ${}."
