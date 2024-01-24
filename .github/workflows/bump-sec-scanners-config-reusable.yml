@@ -110,6 +110,7 @@ jobs:
         env:
           TIMEOUT: ${{ inputs.timeout }}
           PR_URL: ${{ env.PR_URL }}
+          GH_TOKEN: ${{ secrets.BOT_PAT }}
         run: |
           end_time=$((SECONDS+${TIMEOUT}))
 
