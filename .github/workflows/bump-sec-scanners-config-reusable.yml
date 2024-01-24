@@ -36,21 +36,21 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.BOT_PAT }}
         run: |
+          # set git username 
           ghusername=$(curl -H "Authorization: token {GH_TOKEN}" https://api.github.com/user)
           git config user.name "${ghusername}"
-
+          # set git mail adress
           ghmailaddress=$(curl -H "Authorization: token {GH_TOKEN}" https://api.github.com/email)
           git config user.email "${ghmailaddress}"
+          # set remote url
+          git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${REPO}.git"
 
       - name: Create a pull request
         if: ${{ env.create_pr == 'true' }}
         env:
           REPO: ${{ github.repository }}
-          GH_TOKEN: ${{ secrets.BOT_PAT }}
         shell: bash
         run: |
-          echo "Uncommitted changes found. Committing changes..."
-
 
           CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
           echo "${CURRENT_BRANCH}"
@@ -63,7 +63,6 @@ jobs:
           git add sec-scanners-config.yaml
           git commit -m "auto-bump sec-scanners-config: ${PR_DATE}"
                    
-          git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${REPO}.git"
           git push origin "$BRANCH_NAME"
 
           BODY="This is an auto-generated PR to bump the sec-scanners-config.yml on ${REPO}."
