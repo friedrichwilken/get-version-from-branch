@@ -56,7 +56,7 @@ jobs:
             git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${REPO}.git"
             git push origin "$BRANCH_NAME"
 
-            BODY="This is an auto-generated PR to bump the sec-scanners-config.yml on ${}."
+            BODY="This is an auto-generated PR to bump the sec-scanners-config.yml on ${REPO}."
             gh pr create --base "${CURRENT_BRANCH}" --head "${BRANCH_NAME}" --title "Bump sec-scanners-config on ${CURRENT_BRANCH}" --body "${BODY}" 
           else
             echo "No uncommitted changes found."
