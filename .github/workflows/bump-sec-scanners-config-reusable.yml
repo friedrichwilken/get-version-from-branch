@@ -15,9 +15,9 @@
 #   call-this-workflow:
 #     uses: friedrichwilken/reusable-workflow/.github/workflows/bump-sec-scanners-config-reusable.yml@main
 #     with:
-#     timeout: 3600 # 1 hour
-#   secrets:
-#     BOT_PAT: ${{ secrets.my_pat }}
+#       timeout: 3600 # 1 hour
+#     secrets:
+#       BOT_PAT: ${{ secrets.my_pat }}
 
 name: Lint code (reusable)
 
