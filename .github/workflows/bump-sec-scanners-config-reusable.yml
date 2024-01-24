@@ -1,5 +1,24 @@
-# todo description
-# requires render-sec-scanners-config.sh
+# This is a reusbale workflow to bump the 'sec-scanners-config.'
+#
+# It will do so by using the script `hack/scripts/render-sec-scanners-config.sh`, that is not part of the workflow.
+# If you want to run this workflow against a repo the script must exist in that repo. This is by design, because every repo
+# will require a specfic sec-scanners-config.yaml.
+#
+# To create a PR and monitor it, this workflow will require a classic github personal access token (pat) passed
+# as a secret named `BOT_PAT`. The token must be configured to have all rights for `repo`, `user`, `workflow`.
+#
+# If changes were done by the script, the workflow will create a PR and wait for it to be merged.
+# The waiting will happen with a timeout, that can be set via the input of `timeout`.
+#
+# Examples of using this workflow:
+# jobs:
+#   call-this-workflow:
+#     uses: friedrichwilken/reusable-workflow/.github/workflows/bump-sec-scanners-config-reusable.yml@main
+#     with:
+#     timeout: 3600 # 1 hour
+#   secrets:
+#     BOT_PAT: ${{ secrets.my_pat }}
+
 name: Lint code (reusable)
 
 on:
