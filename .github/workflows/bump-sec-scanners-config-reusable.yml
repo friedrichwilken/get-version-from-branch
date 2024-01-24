@@ -4,6 +4,12 @@ name: Lint code (reusable)
 
 on:
   workflow_call:
+    inputs:
+      timeout:
+        required: false
+        type: number
+        description: The time in seconds this workflow will wait for a resulting PR to be merged.
+        default: 3600 # 1 hour
     secrets:
       BOT_PAT:
         required: true
@@ -75,12 +81,46 @@ jobs:
           GH_TOKEN: ${{ secrets.BOT_PAT }}
         shell: bash
         run: |
+          # Create a new branch for our changes.
           git checkout -b "${BRANCH_NAME}"
 
+          # Stage the changes to sec-scanner-config.yaml and create a commit.
           git add sec-scanners-config.yaml
           git commit -m "auto-bump sec-scanners-config: ${PR_DATE}"
-                   
+
+          # Push the changes to origin, as defined earlier.
           git push origin "$BRANCH_NAME"
 
+          # Create a PR.
           BODY="This is an auto-generated PR to bump the sec-scanners-config.yml on ${REPO}."
           gh pr create --base "${CURRENT_BRANCH}" --head "${BRANCH_NAME}" --title "Bump sec-scanners-config on ${CURRENT_BRANCH}" --body "${BODY}"
+
+          # 'gh pr create' will return the url to the PR. Let's store it to the GITHUB_ENV, so we can use it in other steps.
+          PR_URL=$?
+          echo "PR_URL=${PR_URL}" >> $GITHUB_ENV
+
+      - name: USER INTERACTION REQUIRED
+        shell: bash
+        env:
+          PR_URL: ${{ env.PR_URL }}
+        run: |
+          echo "please review  ${PR_URL}"
+
+      - name: Wait for PR to be Merged
+        env:
+          TIMEOUT: ${{ inputs.timeout }}
+          PR_URL: ${{ env.PR_URL }}
+        run: |
+          end_time=$((SECONDS+${TIMEOUT}))
+
+          while [ $SECONDS -lt $end_time ]; do
+            pr_state=$(gh pr view ${PR_URL} --json state --porcelain)
+            if [ "$pr_state" == "MERGED" ]; then
+              echo "PR has been merged!"
+              exit 0
+            fi
+            sleep 10
+          done
+
+          echo "Timeout reached. PR not merged within the specified time."
+          exit 1
