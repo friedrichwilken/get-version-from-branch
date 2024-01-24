@@ -93,10 +93,7 @@ jobs:
 
           # Create a PR.
           BODY="This is an auto-generated PR to bump the sec-scanners-config.yml on ${REPO}."
-          gh pr create --base "${CURRENT_BRANCH}" --head "${BRANCH_NAME}" --title "Bump sec-scanners-config on ${CURRENT_BRANCH}" --body "${BODY}"
-
-          # 'gh pr create' will return the url to the PR. Let's store it to the GITHUB_ENV, so we can use it in other steps.
-          PR_URL=$?
+          PR_URL=$(gh pr create --base "${CURRENT_BRANCH}" --head "${BRANCH_NAME}" --title "Bump sec-scanners-config on ${CURRENT_BRANCH}" --body "${BODY}")
           echo "PR_URL=${PR_URL}" >> $GITHUB_ENV
 
       - name: USER INTERACTION REQUIRED
