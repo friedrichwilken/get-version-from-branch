@@ -12,6 +12,9 @@ jobs:
   bump:
     name: bump sec-scanners-config.yaml
     runs-on: ubuntu-latest
+    env:
+      REPO: ${{ github.repository }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -47,8 +50,6 @@ jobs:
 
       - name: Create a pull request
         if: ${{ env.create_pr == 'true' }}
-        env:
-          REPO: ${{ github.repository }}
         shell: bash
         run: |
 
