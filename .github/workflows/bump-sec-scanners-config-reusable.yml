@@ -28,10 +28,8 @@ jobs:
 
       - name: Set git Config
         run: |
-          ghuser=$(curl -H "Authorization: token ${{ secrets.BOT_PAT }}" https://api.github.com/user)
-          git config user.name "${ghuser}"
-          ghmail=$(curl -H "Authorization: token ${{ secrets.BOT_PAT }}" https://api.github.com/emails)
-          git config user.email "${ghmail}"
+          git config user.name "friedrichwilken"
+          git config user.email "jens.wilken@sap.com"
 
       - name: Create a pull request
         env:
