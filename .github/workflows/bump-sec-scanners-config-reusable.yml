@@ -11,13 +11,23 @@
 # The waiting will happen with a timeout, that can be set via the input of `timeout`.
 #
 # Examples of using this workflow:
-# jobs:
-#   call-this-workflow:
-#     uses: friedrichwilken/reusable-workflow/.github/workflows/bump-sec-scanners-config-reusable.yml@main
-#     with:
-#       timeout: 3600 # 1 hour
-#     secrets:
-#       BOT_PAT: ${{ secrets.my_pat }}
+#  1. Set all awailable inputs and secrets.
+#
+#   jobs:
+#     call-this-workflow:
+#       uses: friedrichwilken/reusable-workflow/.github/workflows/bump-sec-scanners-config-reusable.yml@main
+#       with:
+#         timeout: 3600 # 1 hour
+#       secrets:
+#         BOT_PAT: ${{ secrets.my_pat }}
+#
+#  2. Minimal setup:
+#
+#   jobs:
+#     call-this-workflow:
+#       uses: friedrichwilken/reusable-workflow/.github/workflows/bump-sec-scanners-config-reusable.yml@main
+#       secrets:
+#         BOT_PAT: ${{ secrets.my_pat }}
 
 name: Lint code (reusable)
 
