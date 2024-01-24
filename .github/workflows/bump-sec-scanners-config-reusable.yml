@@ -7,11 +7,6 @@ on:
     secrets:
       BOT_PAT:
         required: true
-    inputs:
-      author:
-        required: true
-        type: string
-        description: the user that will be associated with any PRs that are getting created here.
 
 jobs:
   bump:
@@ -20,6 +15,11 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Render sec-scanners-config.sh
+        shell: bash
+        # Where ever you use this workflow, the script hack/scripts/render-sec-scanners-config.sh must exist.
+        run: ./hack/scripts/render-sec-scanners-config.sh
 
       - name: Check for Changes
         id: skip_check
@@ -31,11 +31,16 @@ jobs:
             echo "create_pr=true" >> $GIHUB_ENV
           fi
 
-      - name: Render sec-scanners-config.sh
+      - name: Set Up Git
         if: ${{ env.create_pr == 'true' }}
-        shell: bash
-        # Where ever you use this workflow, the script hack/scripts/render-sec-scanners-config.sh must exist.
-        run: ./hack/scripts/render-sec-scanners-config.sh
+        env:
+          GH_TOKEN: ${{ secrets.BOT_PAT }}
+        run: |
+          ghusername=$(curl -H "Authorization: token {GH_TOKEN}" https://api.github.com/user)
+          git config user.name "${ghusername}"
+
+          ghmailaddress=$(curl -H "Authorization: token {GH_TOKEN}" https://api.github.com/email)
+          git config user.email "${ghmailaddress}"
 
       - name: Create a pull request
         if: ${{ env.create_pr == 'true' }}
@@ -46,8 +51,6 @@ jobs:
         run: |
           echo "Uncommitted changes found. Committing changes..."
 
-          git config user.name "friedrichwilken"
-          git config user.email "jens.wilken@sap.com"         
 
           CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
           echo "${CURRENT_BRANCH}"
