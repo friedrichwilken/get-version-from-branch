@@ -32,7 +32,7 @@
 #       secrets:
 #         BOT_PAT: ${{ secrets.my_pat }}
 
-name: Lint code (reusable)
+name: bump sec-scanners-config.yaml (reusable)
 
 on:
   workflow_call:
@@ -72,6 +72,11 @@ jobs:
             echo "Changes found. Creating a PR and waiting for it to be merged." 
             echo "create_pr=true" >> $GITHUB_ENV 
           fi
+
+      - name: Print out sec-scanners-config.yaml
+        if: ${{ env.create_pr == 'true' }}
+        shell: bash
+        run: cat sec-scanners-config.yaml
 
       - name: Set Up Git
         if: ${{ env.create_pr == 'true' }}
@@ -136,6 +141,7 @@ jobs:
           echo "please review  ${PR_URL}"
 
       - name: Wait for PR to be Merged
+        shell: bash
         env:
           TIMEOUT: ${{ inputs.timeout }}
           PR_URL: ${{ env.PR_URL }}
