@@ -4,6 +4,7 @@ on:
   workflow_call:
     outputs:
       VERSION:
+        type: string
         description: "The semantic version x.y.z, e.g.: 1.7.4"
         value: ${{ jobs.create-version.outputs.VERSION }}
 
@@ -38,8 +39,3 @@ jobs:
           VERSION="${MAJOR}.${MINOR}.${PATCH:-0}"
           echo "VERSION=${VERSION}" >> $GITHUB_OUTPUT
           exit 0
-
-      - name: print version
-        env:
-          VERSION: ${{ needs.create-version.outputs.VERSION }}
-        run: echo "${VERSION}"
