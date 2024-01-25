@@ -1,0 +1,43 @@
+# todo add description
+
+name: create release (reusable)
+
+on:
+  workflow_call:
+    inputs:
+      dry-run:
+        type: boolean
+        required: true
+        default: false
+        description: Setting this to `true` will skip the final step of publishing the release, leaving it as a draft-release. This can be helpful for testing and debugging. Note that the tag and release are still getting generated and the next run of this result in incremented release version. To avoid this, do not forget to delete the resulting release and tag.
+    secrets:
+      BOT_PAT:
+        required: true
+
+jobs:
+  gen-version:
+    name: generate version number from branch
+    uses: friedrichwilken/reusable-workflows/.github/workflows/get-version-from-branch-reusable.yml@main
+    # outputs: VERSION
+
+  bump-sec-scanners-config:
+    name: bump the sec-scandners-config.yaml
+    needs: gen-version
+    uses: kyma-project/eventing-tools/.github/workflows/bump-sec-scanners-config.yml@main
+    with:
+      version_tag: ${{ needs.gen-version.outputs.VERSION }}
+    secrets:
+      BOT_PAT: ${{ secrets.BOT_PAT }}
+
+  run-unit-test:
+    name: Run Unit Tests
+    needs: [gen-version, bump-sec-scanners-config]
+    uses: kyma-project/eventing-tools/.github/workflows/unit-test-reusable.yml@main
+
+  run-golint-cli:
+    name: Run Golint-cli
+    needs: [gen-version, bump-sec-scanners-config]
+    uses: kyma-project/eventing-tools/.github/workflows/lint-reusable.yml@main
+
+  #    create-draft-release:
+  #    name: Create a draft release
