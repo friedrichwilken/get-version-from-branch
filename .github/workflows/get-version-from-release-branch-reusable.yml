@@ -4,7 +4,6 @@ on:
   workflow_call:
     outputs:
       VERSION:
-        type: string
         description: "The semantic version x.y.z, e.g.: 1.7.4"
         value: ${{ jobs.create-version.outputs.VERSION }}
 
