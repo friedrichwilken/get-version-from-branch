@@ -5,7 +5,7 @@ name: create release (reusable)
 on:
   workflow_call:
     inputs:
-      dry-run:
+      DRY_RUN:
         type: boolean
         required: true
         default: false
@@ -23,7 +23,7 @@ jobs:
   bump-sec-scanners-config:
     name: bump the sec-scandners-config.yaml
     needs: gen-version
-    uses: kyma-project/eventing-tools/.github/workflows/bump-sec-scanners-config.yml@main
+    uses: friedrichwilken/reusable-workflows/.github/workflows/bump-sec-scanners-config.yml@main
     with:
       version_tag: ${{ needs.gen-version.outputs.VERSION }}
     secrets:
@@ -32,12 +32,15 @@ jobs:
   run-unit-test:
     name: Run Unit Tests
     needs: [gen-version, bump-sec-scanners-config]
-    uses: kyma-project/eventing-tools/.github/workflows/unit-test-reusable.yml@main
+    uses: friedrichwilken/reusable-workflows/.github/workflows/unit-test-reusable.yml@main
 
   run-golint-cli:
     name: Run Golint-cli
     needs: [gen-version, bump-sec-scanners-config]
-    uses: kyma-project/eventing-tools/.github/workflows/lint-reusable.yml@main
+    uses: friedrichwilken/reusable-workflows/.github/workflows/lint-reusable.yml@main
 
   #    create-draft-release:
+  #    name: Create a draft release
+
+  #    publish-release:
   #    name: Create a draft release
