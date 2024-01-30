@@ -102,7 +102,7 @@ jobs:
           # set remote url
           git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${REPO}.git"
 
-      - name: Set All Variables
+      - name: Set all variables
         if: ${{ env.CREATE_PR == 'true' }}
         shell: bash
         run: |
@@ -118,7 +118,7 @@ jobs:
           echo "name of the new branch: ${BRANCH_NAME}"
           echo "BRANCH_NAME=${BRANCH_NAME}" >> $GITHUB_ENV
 
-      - name: Create a Pull Request
+      - name: Create a pull request
         if: ${{ env.CREATE_PR == 'true' }}
         env:
           REPO: ${{ github.repository }}
@@ -150,7 +150,7 @@ jobs:
         run: |
           echo "please review  ${PR_URL}"
 
-      - name: Wait for PR to be Merged
+      - name: Wait for PR to be merged
         shell: bash
         env:
           TIMEOUT: ${{ inputs.TIMEOUT }}
