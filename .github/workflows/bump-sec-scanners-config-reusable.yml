@@ -89,18 +89,18 @@ jobs:
       - name: Set up git
         if: ${{ env.CREATE_PR == 'true' }}
         env:
-          BOT_PAT: ${{ secrets.BOT_PAT }}
+          GH_TOKEN: ${{ secrets.BOT_PAT }}
           REPO: ${{ github.repository }}
         shell: bash
         run: |
           # set git username 
-          ghusername=$(curl -s -H "Authorization: token ${BOT_PAT}" https://api.github.com/user)
+          ghusername=$(curl -s -H "Authorization: token ${GH_TOKEN}" https://api.github.com/user)
           git config user.name "${ghusername}"
           # set git mail address
-          ghmailaddress=$(curl -s -H "Authorization: token ${BOT_PAT}" https://api.github.com/email)
+          ghmailaddress=$(curl -s -H "Authorization: token ${GH_TOKEN}" https://api.github.com/email)
           git config user.email "${ghmailaddress}"
           # set remote url
-          git remote set-url origin "https://x-access-token:${BOT_PAT}@github.com/${REPO}.git"
+          git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${REPO}.git"
 
       - name: Set All Variables
         if: ${{ env.CREATE_PR == 'true' }}
@@ -155,7 +155,7 @@ jobs:
         env:
           TIMEOUT: ${{ inputs.TIMEOUT }}
           PR_URL: ${{ env.PR_URL }}
-          BOT_PAT: ${{ secrets.BOT_PAT }}
+          GH_TOKEN: ${{ secrets.BOT_PAT }}
         run: |
           end_time=$((SECONDS+${TIMEOUT}))
 
