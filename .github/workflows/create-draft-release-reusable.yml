@@ -42,7 +42,9 @@ jobs:
           VERSION: ${{ inputs.VERSION }}
         # note: your repository needs to have this file.
         # running this script should result in the file named CHANGELOG.md.
-        run: ./hack/scripts/create_changelog.sh "${VERSION}"
+        shell: bash
+        run: |
+          ./hack/scripts/create_changelog.sh "${VERSION}"
 
       - name: Print out changelog
         run: cat CHANGELOG.md

@@ -51,10 +51,14 @@ jobs:
         run: ./hack/scripts/render_crd.sh "${VERSION}" "${CRD_FILE}"
 
       - name: Print out CR file
+        env:
+          CR_FILE: ${{ inputs.CR_FILE }}
         shell: bash
         run: cat "${CR_FILE}"
 
       - name: Print out CRD file
+        env:
+          CRD_FILE: ${{ inputs.CRD_FILE }}
         shell: bash
         run: cat "${CRD_FILE}"
 
