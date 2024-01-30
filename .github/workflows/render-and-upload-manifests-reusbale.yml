@@ -28,21 +28,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up git
-        env:
-          BOT_PAT: ${{ secrets.BOT_PAT }}
-          REPO: ${{ github.repository }}
-        shell: bash
-        run: |
-          # set git username 
-          ghusername=$(curl -s -H "Authorization: token ${BOT_PAT}" https://api.github.com/user)
-          git config user.name "${ghusername}"
-          # set git mail address
-          ghmailaddress=$(curl -s -H "Authorization: token ${BOT_PAT}" https://api.github.com/email)
-          git config user.email "${ghmailaddress}"
-          # set remote url
-          git remote set-url origin "https://x-access-token:${BOT_PAT}@github.com/${REPO}.git"
-
       - name: Render CRD
         env:
           VERSION: ${{ inputs.VERSION }}
