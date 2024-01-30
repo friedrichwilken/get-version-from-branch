@@ -50,6 +50,7 @@ jobs:
       - name: Create the draft release
         env:
           VERSION: ${{ inputs.VERSION }}
+          GH_TOKEN: ${{ secrets.BOT_PAT }}
         shell: bash
         run: |
           gh release create "${VERSION}"\
