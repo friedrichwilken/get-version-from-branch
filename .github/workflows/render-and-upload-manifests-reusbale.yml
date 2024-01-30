@@ -66,7 +66,9 @@ jobs:
         env:
           VERSION: ${{ inputs.VERSION }}
           GH_TOKEN: ${{ secrets.BOT_PAT }}
+          CRD_FILE: ${{ inputs.CRD_FILE }}
+          CR_FILE: ${{ inputs.CR_FILE }}
         shell: bash
         run: |
-          gh release upload "${VERSION}" "${CRD_FILE}" 
           gh release upload "${VERSION}" "${CR_FILE}"
+          gh release upload "${VERSION}" "${CRD_FILE}"
