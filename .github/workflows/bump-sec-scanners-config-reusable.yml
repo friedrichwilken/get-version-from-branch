@@ -13,7 +13,7 @@
 #   Setting a secret for a repo: https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions
 #
 # If changes were done by the script, the workflow will create a PR and wait for it to be merged.
-# The waiting will happen with a timeout that can be set via the input of `timeout`. The units are seconds.
+# The waiting will happen with a timeout that can be set via the input of `TIMEOUT`. The units are seconds.
 # It has a default value if 3600 (seconds (= 1 hour)).
 #
 # Examples of using this workflow:
@@ -24,7 +24,7 @@
 #       uses: friedrichwilken/reusable-workflow/.github/workflows/bump-sec-scanners-config-reusable.yml@main
 #       with:
 #         version_tag: 2.3.4
-#         timeout: 3600 # 1 hour
+#         TIMEOUT: 3600 # 1 hour
 #       secrets:
 #         BOT_PAT: ${{ secrets.my_pat }}
 #  2. Minimal setup:
@@ -42,11 +42,11 @@ name: bump sec-scanners-config.yaml (reusable)
 on:
   workflow_call:
     inputs:
-      version_tag:
+      VERSION:
         required: true
         type: string
         description: The semantic version number, that will be used to tag the main image in the sec scanner config.
-      timeout:
+      TIMEOUT:
         required: false
         type: number
         description: The time in seconds this workflow will wait for a resulting PR to be merged.
@@ -63,50 +63,49 @@ jobs:
       REPO: ${{ github.repository }}
 
     steps:
-      - name: Checkout Code
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Render sec-scanners-config.yaml
         env:
-          VERSION_TAG: ${{ inputs.version_tag }}
-        shell: bash
+          VERSION: ${{ inputs.VERSION }}
         # Where ever you use this workflow, the script hack/scripts/render-sec-scanners-config.sh must exist.
-        run: ./hack/scripts/render-sec-scanners-config.sh "${VERSION_TAG}"
+        run: ./hack/scripts/render-sec-scanners-config.sh "${VERSION}"
 
       # Check if there are changes so we can determin if all following steps can be skipped.
-      - name: Check For Changes
+      - name: Check for changes
         shell: bash
         run: |
           if [ -z "$(git status --porcelain)" ]; then 
             echo "No changes found. No need to create a PR" 
           else 
             echo "Changes found. Creating a PR and waiting for it to be merged." 
-            echo "create_pr=true" >> $GITHUB_ENV 
+            echo "CREATE_PR=true" >> $GITHUB_ENV 
           fi
 
       - name: Print out sec-scanners-config.yaml
-        if: ${{ env.create_pr == 'true' }}
+        if: ${{ env.CREATE_PR == 'true' }}
         shell: bash
         run: cat sec-scanners-config.yaml
 
-      - name: Set Up Git
-        if: ${{ env.create_pr == 'true' }}
+      - name: Set up git
+        if: ${{ env.CREATE_PR == 'true' }}
         env:
-          GH_TOKEN: ${{ secrets.BOT_PAT }}
+          BOT_PAT: ${{ secrets.BOT_PAT }}
           REPO: ${{ github.repository }}
         shell: bash
         run: |
           # set git username 
-          ghusername=$(curl -s -H "Authorization: token ${GH_TOKEN}" https://api.github.com/user)
+          ghusername=$(curl -s -H "Authorization: token ${BOT_PAT}" https://api.github.com/user)
           git config user.name "${ghusername}"
           # set git mail address
-          ghmailaddress=$(curl -s -H "Authorization: token ${GH_TOKEN}" https://api.github.com/email)
+          ghmailaddress=$(curl -s -H "Authorization: token ${BOT_PAT}" https://api.github.com/email)
           git config user.email "${ghmailaddress}"
           # set remote url
-          git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${REPO}.git"
+          git remote set-url origin "https://x-access-token:${BOT_PAT}@github.com/${REPO}.git"
 
       - name: Set All Variables
-        if: ${{ env.create_pr == 'true' }}
+        if: ${{ env.CREATE_PR == 'true' }}
         shell: bash
         run: |
           CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
@@ -122,12 +121,12 @@ jobs:
           echo "BRANCH_NAME=${BRANCH_NAME}" >> $GITHUB_ENV
 
       - name: Create a Pull Request
-        if: ${{ env.create_pr == 'true' }}
+        if: ${{ env.CREATE_PR == 'true' }}
         env:
           CURRENT_BRANCH: ${{ env.CURRENT_BRANCH }}
           PR_DATE: ${{ env.PR_DATE }}
           BRANCH_NAME: ${{ env.BRANCH_NAME }}
-          GH_TOKEN: ${{ secrets.BOT_PAT }}
+          BOT_PAT: ${{ secrets.BOT_PAT }}
         shell: bash
         run: |
           # Create a new branch for our changes.
@@ -155,9 +154,9 @@ jobs:
       - name: Wait for PR to be Merged
         shell: bash
         env:
-          TIMEOUT: ${{ inputs.timeout }}
+          TIMEOUT: ${{ inputs.TIMEOUT }}
           PR_URL: ${{ env.PR_URL }}
-          GH_TOKEN: ${{ secrets.BOT_PAT }}
+          BOT_PAT: ${{ secrets.BOT_PAT }}
         run: |
           end_time=$((SECONDS+${TIMEOUT}))
 
