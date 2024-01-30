@@ -28,7 +28,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set Up Git
+      - name: Set up git
         env:
           BOT_PAT: ${{ secrets.BOT_PAT }}
           REPO: ${{ github.repository }}
@@ -61,6 +61,7 @@ jobs:
       - name: Upload manifests
         env:
           VERSION: ${{ inputs.VERSION }}
+          GH_TOKEN: ${{ secrets.BOT_PAT }}
         shell: bash
         run: |
           gh release upload "${VERSION}"\
