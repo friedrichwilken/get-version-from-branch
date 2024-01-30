@@ -26,4 +26,4 @@ jobs:
           GH_TOKEN: ${{ secrets.BOT_PAT }}
         shell: bash
         run: |
-          gh release edit "${VERSION}" --draft=flase --latest
+          gh release edit "${VERSION}" --draft=false --latest
