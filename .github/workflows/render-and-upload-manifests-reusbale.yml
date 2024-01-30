@@ -68,6 +68,5 @@ jobs:
           GH_TOKEN: ${{ secrets.BOT_PAT }}
         shell: bash
         run: |
-          gh release upload "${VERSION}"\
-          "${CRD_FILE}"\
-          "${CR_FILE}"
+          gh release upload "${VERSION}" "${CRD_FILE}" 
+          gh release upload "${VERSION}" "${CR_FILE}"
