@@ -59,8 +59,6 @@ jobs:
   bump:
     name: Bump sec-scanners-config.yaml
     runs-on: ubuntu-latest
-    env:
-      REPO: ${{ github.repository }}
 
     steps:
       - name: Checkout code
@@ -123,6 +121,7 @@ jobs:
       - name: Create a Pull Request
         if: ${{ env.CREATE_PR == 'true' }}
         env:
+          REPO: ${{ github.repository }}
           CURRENT_BRANCH: ${{ env.CURRENT_BRANCH }}
           PR_DATE: ${{ env.PR_DATE }}
           BRANCH_NAME: ${{ env.BRANCH_NAME }}
