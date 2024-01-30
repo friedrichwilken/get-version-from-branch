@@ -1,0 +1,54 @@
+name: Create Draft Release (reusable)
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        required: true
+        type: string
+        description: The semantic version number.
+    secrets:
+      BOT_PAT:
+        required: true
+        description: The github personal access token of your bot.
+      GH_TOKEN:
+        required: true
+
+jobs:
+  create-draft-release:
+    name: Create a draft release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up git
+        env:
+          BOT_PAT: ${{ secrets.BOT_PAT }}
+        shell: bash
+        run: |
+          # set git username 
+          ghusername=$(curl -s -H "Authorization: token ${BOT_PAT}" https://api.github.com/user)
+          git config user.name "${ghusername}"
+          # set git mail address
+          ghmailaddress=$(curl -s -H "Authorization: token ${BOT_PAT}" https://api.github.com/email)
+          git config user.email "${ghmailaddress}"
+          # set remote url
+          git remote set-url origin "https://x-access-token:${BOT_PAT}@github.com/${REPO}.git"
+
+      - name: Write changelog to file
+        env:
+          VERSION: ${{ inputs.version }}
+        run: ./hack/scripts/create_changelog.sh "${VERSION}"
+
+      - name: Print out changelog
+        run: cat CHANGELOG.md
+
+      - name: Create the draft release
+        env:
+          VERSION: ${{ inputs.version }}
+        shell: bash
+        run: |
+          gh release create "${VERSION}"\
+          --draft\
+          --notes-file CHANGELOG.md

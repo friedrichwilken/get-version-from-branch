@@ -93,6 +93,7 @@ jobs:
         if: ${{ env.create_pr == 'true' }}
         env:
           GH_TOKEN: ${{ secrets.BOT_PAT }}
+          REPO: ${{ github.repository }}
         shell: bash
         run: |
           # set git username 
