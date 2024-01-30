@@ -40,7 +40,4 @@ jobs:
           VERSION: ${{ inputs.VERSION }}
         shell: bash
         run: |
-          gh release edit "${VERSION}"\
-          --draft=flase\
-          --latest\
-          --verify-tag
+          gh release edit "${VERSION}" --draft=flase --latest
