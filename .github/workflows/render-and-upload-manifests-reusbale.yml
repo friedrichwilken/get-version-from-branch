@@ -7,11 +7,11 @@ on:
         required: true
         type: string
         description: The semantic version number.
-      CR_FILE_NAME:
+      CR_FILE:
         type: string
         required: true
         description: The file name of the CR.
-      CRD_FILE_NAME:
+      CRD_FILE:
         type: string
         required: true
         description: The file name of the CRD.
@@ -29,7 +29,6 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set Up Git
-        if: ${{ env.create_pr == 'true' }}
         env:
           BOT_PAT: ${{ secrets.BOT_PAT }}
           REPO: ${{ github.repository }}
@@ -47,17 +46,17 @@ jobs:
       - name: Render CRD
         env:
           VERSION: ${{ inputs.VERSION }}
-          CRD_FILE_NAME: ${{ inputs.CRD_FILE_NAME }}
+          CRD_FILE: ${{ inputs.CRD_FILE }}
         shell: bash
-        run: ./hack/scripts/render_crd.sh "${VERSION}" "${CRD_FILE_NAME}"
+        run: ./hack/scripts/render_crd.sh "${VERSION}" "${CRD_FILE}"
 
       - name: Print out CR file
         shell: bash
-        run: cat "${CR_FILE_NAME}"
+        run: cat "${CR_FILE}"
 
       - name: Print out CRD file
         shell: bash
-        run: cat "${CRD_FILE_NAME}"
+        run: cat "${CRD_FILE}"
 
       - name: Upload manifests
         env:
@@ -65,5 +64,5 @@ jobs:
         shell: bash
         run: |
           gh release upload "${VERSION}"\
-          "${CRD_FILE_NAME}"\
-          "${CR_FILE_NAME}"
+          "${CRD_FILE}"\
+          "${CR_FILE}"

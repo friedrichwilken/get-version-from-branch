@@ -3,7 +3,7 @@ name: Create Draft Release (reusable)
 on:
   workflow_call:
     inputs:
-      version:
+      VERSION:
         required: true
         type: string
         description: The semantic version number.
@@ -25,6 +25,7 @@ jobs:
       - name: Set up git
         env:
           BOT_PAT: ${{ secrets.BOT_PAT }}
+          REPO: ${{ github.repository }}
         shell: bash
         run: |
           # set git username 
@@ -38,7 +39,9 @@ jobs:
 
       - name: Write changelog to file
         env:
-          VERSION: ${{ inputs.version }}
+          VERSION: ${{ inputs.VERSION }}
+        # note: your repository needs to have this file.
+        # running this script should result in the file named CHANGELOG.md.
         run: ./hack/scripts/create_changelog.sh "${VERSION}"
 
       - name: Print out changelog
@@ -46,9 +49,10 @@ jobs:
 
       - name: Create the draft release
         env:
-          VERSION: ${{ inputs.version }}
+          VERSION: ${{ inputs.VERSION }}
         shell: bash
         run: |
           gh release create "${VERSION}"\
           --draft\
+          --verify-tag\
           --notes-file CHANGELOG.md
