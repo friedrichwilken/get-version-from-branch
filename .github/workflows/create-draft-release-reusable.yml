@@ -1,4 +1,4 @@
-name: Create Draft Release (reusable)
+name: Create draft release (reusable)
 
 on:
   workflow_call:
