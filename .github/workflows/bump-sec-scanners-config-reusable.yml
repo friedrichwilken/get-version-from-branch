@@ -94,7 +94,7 @@ jobs:
         shell: bash
         run: |
           # set git username 
-          ghusername=$(curl -s -H "Authorization: token ${GH_TOKEN}" https://api.github.com/user)
+          ghusername=$(curl -s -H "Authorization: token ${GH_TOKEN}" https://api.github.com/user | jq '.login')
           git config user.name "${ghusername}"
           # set git mail address
           ghmailaddress=$(curl -s -H "Authorization: token ${GH_TOKEN}" https://api.github.com/email)
