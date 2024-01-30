@@ -1,7 +1,7 @@
 name: Render and upload manifests
 
 on:
-  workflow_dispatch:
+  workflow_call:
     inputs:
       VERSION:
         required: true
